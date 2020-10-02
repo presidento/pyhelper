@@ -6,6 +6,7 @@ import os
 import pathlib
 import sys
 import datetime
+import subprocess
 
 current_dir = pathlib.Path(os.getcwd())
 while current_dir:
@@ -26,4 +27,9 @@ with pathlib.Path(__file__).with_suffix(".log").open("a") as log_file:
     current_dir = current_dir.as_posix()
     log_file.write(f"{date} {args} # {cwd} # {current_dir}\n")
 
-os.spawnv(os.P_WAIT, python_executable, sys.argv)
+try:
+    subprocess.run([python_executable.as_posix()] + sys.argv[1:], check=True)
+except subprocess.CalledProcessError as ex:
+    sys.exit(ex.returncode)
+except:
+    sys.exit(1)
